@@ -4,7 +4,7 @@ exports.getUsersData = async (req, res) => {
   try {
     const userData = await User.findAll({
       attributes: {
-        exclude: ["userId", "createdAt", "updatedAt"],
+        exclude: ["createdAt", "updatedAt"],
       },
     });
     res.send({
