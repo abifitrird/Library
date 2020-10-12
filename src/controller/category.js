@@ -125,6 +125,7 @@ exports.editCategory = async (req, res) => {
 };
 
 // function to delete a category
+// belum pakai pemeriksaan apakah data ditemukan atau tidak
 exports.deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
@@ -136,7 +137,7 @@ exports.deleteCategory = async (req, res) => {
     res.send({
       message: `Data with id=${id} has been deleted`,
       data: {
-        category: deletedCategory,
+        id: deletedCategory,
       },
     });
   } catch (err) {

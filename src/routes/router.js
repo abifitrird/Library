@@ -5,7 +5,7 @@ const router = express.Router();
 // Users' functions
 const { getUsersData, deleteUser } = require("../controller/user");
 
-// Categories' function
+// Categories' functions
 const {
   getCategories,
   getOneCategory,
@@ -13,6 +13,15 @@ const {
   editCategory,
   deleteCategory,
 } = require("../controller/category");
+
+// Books' functions
+const {
+  getBooks,
+  getOneBook,
+  createBook,
+  editBook,
+  deleteBook,
+} = require("../controller/book");
 
 // routing for Users
 router.get("/users", getUsersData);
@@ -24,5 +33,12 @@ router.get("/category/:id", getOneCategory);
 router.post("/category", createCategory);
 router.patch("/category/:id", editCategory);
 router.delete("/category/:id", deleteCategory);
+
+// routing for Books
+router.get("/books", getBooks);
+router.get("/book/:id", getOneBook);
+router.post("/book", createBook);
+router.patch("/book/:id", editBook);
+router.delete("/book/:id", deleteBook);
 
 module.exports = router;
