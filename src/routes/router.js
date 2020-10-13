@@ -6,7 +6,7 @@ const router = express.Router();
 const { getUsersData, deleteUser } = require("../controller/user");
 
 // Users' function (login & register)
-const { register } = require("../controller/auth");
+const { register, login } = require("../controller/auth");
 
 // Categories' functions
 const {
@@ -28,6 +28,7 @@ const {
 
 // routing for register & login
 router.post("/register", register);
+router.post("/login", login);
 
 // routing for Users
 router.get("/users", getUsersData);
