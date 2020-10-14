@@ -9,8 +9,8 @@ const jwt = require("jsonwebtoken");
 // import validator
 const joi = require("@hapi/joi");
 
-//   key for encrypting token
-const jwtKey = "@dumbw4ys!!";
+//   key for decrypt token
+const jwtKey = process.env.JWT_KEY;
 
 exports.register = async (req, res) => {
   try {

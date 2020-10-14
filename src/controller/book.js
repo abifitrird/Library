@@ -57,7 +57,7 @@ exports.getOneBook = async (req, res) => {
     res.send({
       message: "Your request is ready",
       data: {
-        category: detailBook,
+        book: detailBook,
       },
     });
   } catch (err) {
@@ -78,7 +78,7 @@ exports.createBook = async (req, res) => {
     res.send({
       message: "New book entry has been created successfully",
       data: {
-        category: bookCreated,
+        book: bookCreated,
       },
     });
   } catch (err) {

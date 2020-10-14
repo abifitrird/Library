@@ -2,6 +2,9 @@ const express = require("express");
 
 const router = express.Router();
 
+// Authentication's functions
+const { authenticated } = require("../middleware/authentication");
+
 // Users' functions
 const { getUsersData, deleteUser } = require("../controller/user");
 
@@ -37,15 +40,15 @@ router.delete("/user/:id", deleteUser);
 // routing for Categories
 router.get("/category", getCategories);
 router.get("/category/:id", getOneCategory);
-router.post("/category", createCategory);
-router.patch("/category/:id", editCategory);
-router.delete("/category/:id", deleteCategory);
+router.post("/category", authenticated, createCategory);
+router.patch("/category/:id", authenticated, editCategory);
+router.delete("/category/:id", authenticated, deleteCategory);
 
 // routing for Books
 router.get("/books", getBooks);
 router.get("/book/:id", getOneBook);
-router.post("/book", createBook);
-router.patch("/book/:id", editBook);
-router.delete("/book/:id", deleteBook);
+router.post("/book", authenticated, createBook);
+router.patch("/book/:id", authenticated, editBook);
+router.delete("/book/:id", authenticated, deleteBook);
 
 module.exports = router;
