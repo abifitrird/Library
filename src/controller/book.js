@@ -160,21 +160,33 @@ exports.editBook = async (req, res) => {
 };
 
 // function to delete a book
-// belum pakai pemeriksaan apakah data ditemukan atau tidak
 exports.deleteBook = async (req, res) => {
   try {
     const { id } = req.params;
-    const deletedBook = await Book.destroy({
+    const dataBook = await Book.findOne({
       where: {
         id,
       },
     });
-    res.send({
-      message: `Data with id=${id} has been deleted`,
-      data: {
-        id: deletedBook,
-      },
-    });
+    if (dataBook) {
+      const deletedBook = await Book.destroy({
+        where: {
+          id,
+        },
+      });
+      res.send({
+        message: `Data with id=${id} has been deleted`,
+        data: {
+          id: deletedBook,
+        },
+      });
+    } else {
+      res.status(400).send({
+        error: {
+          message: `There is no data with id id=${id}`,
+        },
+      });
+    }
   } catch (err) {
     console.log(err);
     res.status(500).send({

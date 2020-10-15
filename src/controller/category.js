@@ -125,21 +125,34 @@ exports.editCategory = async (req, res) => {
 };
 
 // function to delete a category
-// belum pakai pemeriksaan apakah data ditemukan atau tidak
 exports.deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
-    const deletedCategory = await Category.destroy({
+    const dataCategory = await Category.findOne({
       where: {
         id,
       },
     });
-    res.send({
-      message: `Data with id=${id} has been deleted`,
-      data: {
-        id: deletedCategory,
-      },
-    });
+
+    if (dataCategory) {
+      const deletedCategory = await Category.destroy({
+        where: {
+          id,
+        },
+      });
+      res.send({
+        message: `Data with id=${id} has been deleted`,
+        data: {
+          id: deletedCategory,
+        },
+      });
+    } else {
+      res.status(400).send({
+        error: {
+          message: `There is no data with id id=${id}`,
+        },
+      });
+    }
   } catch (err) {
     console.log(err);
     res.status(500).send({
