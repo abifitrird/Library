@@ -1,28 +1,39 @@
 const { Book, Category, User, AuthorBook } = require("../../models");
 
 // get all book data
-// belum bisa nampilin info category dan author di tengah secara lengkap
 exports.getBooks = async (req, res) => {
   try {
     const bookData = await Book.findAll({
-      include: {
-        model: Category,
-        as: "category",
-        through: {
-          model: AuthorBook,
-          as: "info",
+      include: [
+        {
+          model: Category,
+          as: "category",
+          attributes: ["id", "name"],
         },
-      },
-      include: {
-        model: User,
-        as: "authors",
-        through: {
-          model: AuthorBook,
-          as: "info",
+        {
+          model: User,
+          as: "authors",
+          through: {
+            model: AuthorBook,
+            as: "info",
+            attributes: {
+              exclude: [
+                "createdAt",
+                "updatedAt",
+                "bookId",
+                "userId",
+                "BookId",
+                "UserId",
+              ],
+            },
+          },
+          attributes: {
+            exclude: ["createdAt", "updatedAt", "password"],
+          },
         },
-      },
+      ],
       attributes: {
-        exclude: ["createdAt", "updatedAt"],
+        exclude: ["createdAt", "updatedAt", "CategoryId", "categoryId"],
       },
     });
     res.send({
@@ -41,8 +52,32 @@ exports.getBooks = async (req, res) => {
   }
 };
 
+exports.getFilteredBook = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const filteredBook = await Book.findAll({
+      where: {
+        categoryId: id,
+      },
+    });
+
+    res.send({
+      message: "Your request is ready",
+      data: {
+        books: filteredBook,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({
+      error: {
+        message: "SERVER ERROR",
+      },
+    });
+  }
+};
+
 // function to get specific data from books table
-// belum bisa nampilin info category dan author di tengah secara lengkap
 exports.getOneBook = async (req, res) => {
   try {
     const { id } = req.params;
@@ -50,10 +85,39 @@ exports.getOneBook = async (req, res) => {
       where: {
         id,
       },
+      include: [
+        {
+          model: Category,
+          as: "category",
+          attributes: ["id", "name"],
+        },
+        {
+          model: User,
+          as: "authors",
+          through: {
+            model: AuthorBook,
+            as: "info",
+            attributes: {
+              exclude: [
+                "createdAt",
+                "updatedAt",
+                "bookId",
+                "userId",
+                "BookId",
+                "UserId",
+              ],
+            },
+          },
+          attributes: {
+            exclude: ["createdAt", "updatedAt", "password"],
+          },
+        },
+      ],
       attributes: {
-        exclude: ["createdAt", "updatedAt"],
+        exclude: ["createdAt", "updatedAt", "CategoryId", "categoryId"],
       },
     });
+
     res.send({
       message: "Your request is ready",
       data: {
@@ -70,11 +134,44 @@ exports.getOneBook = async (req, res) => {
   }
 };
 
-// function to add data to categories table
-// belum bisa nambahin id user sebagai author, kan belum tentu authornya punya akun di sini
+// function to add data to books table
+// user add book
 exports.createBook = async (req, res) => {
+  const { id } = req.user;
   try {
-    const bookCreated = await Book.create(req.body);
+    const {
+      title,
+      publication,
+      categoryId,
+      pages,
+      ISBN,
+      aboutBook,
+      status,
+    } = req.body;
+    const file = req.files["file"][0].filename;
+
+    // get 1 user object (author)
+    const user = await User.findOne({
+      where: {
+        id,
+      },
+    });
+
+    // create Book data
+    const bookCreated = await Book.create({
+      title,
+      publication,
+      categoryId,
+      pages,
+      ISBN,
+      aboutBook,
+      file,
+      status,
+    });
+
+    // add new book with all data that have been stored in bookCreated
+    await user.addBook(bookCreated);
+
     res.send({
       message: "New book entry has been created successfully",
       data: {
@@ -177,7 +274,7 @@ exports.deleteBook = async (req, res) => {
       res.send({
         message: `Data with id=${id} has been deleted`,
         data: {
-          id: deletedBook,
+          id: id,
         },
       });
     } else {

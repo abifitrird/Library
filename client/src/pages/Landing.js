@@ -9,7 +9,15 @@ const Landing = () => {
   const { showSignIn, toggleSignIn } = UseModal();
 
   return (
-    <div>
+    <div
+      style={{
+        background: `url(${require("../images/Vector1.svg")})`,
+        backgroundPosition: "right",
+        backgroundSize: "contain",
+        backgroundRepeat: "no-repeat",
+        height: "100vh",
+      }}
+    >
       <div className="container-fluid">
         <div className="row">
           <div className="col-6 px-5 py-3">
@@ -21,10 +29,11 @@ const Landing = () => {
               <h1 className="landing-text">
                 <i>Your</i> library anywhere
               </h1>
-              <h5>
-                Sign-up today and receive unlimited access to all of your
-                reading - share your books.
-              </h5>
+              <h4>
+                Sign-up today and receive unlimited<br></br>
+                access to all of your reading - <br></br>
+                share your books.
+              </h4>
             </div>
 
             <div className="row">
@@ -45,17 +54,6 @@ const Landing = () => {
               <SignUp isShowing={isShowing} toggle={toggle} />
               <SignIn showSignIn={showSignIn} toggleSignIn={toggleSignIn} />
             </div>
-          </div>
-
-          <div className="col-6">
-            <img
-              src={require("../images/Vector1.svg")}
-              style={{
-                maxWidth: "100%",
-                maxHeight: "100vh",
-                float: "right",
-              }}
-            ></img>
           </div>
         </div>
       </div>

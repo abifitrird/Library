@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const port = 5001;
 
 require("dotenv").config();
@@ -7,6 +8,10 @@ require("dotenv").config();
 require("express-group-routes");
 
 const router = require("./src/routes/router");
+
+app.use(express.static("uploads/images"));
+
+app.use(cors());
 
 app.use(express.json());
 

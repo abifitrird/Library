@@ -6,11 +6,14 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
+import { CartContextProvider } from "./context/cartContext";
 
 ReactDOM.render(
   <React.StrictMode>
-    {/* <Landing /> */}
-    <App />
+    <CartContextProvider>
+      {/* <Landing /> */}
+      <App />
+    </CartContextProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

@@ -1,7 +1,45 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import SideBar from "../components/SideBar";
+import MyBooks from "../components/MyBooks";
+import { CartContext } from "../context/cartContext";
+import { API } from "../config/api";
 
 const Profile = () => {
+  const [state] = useContext(CartContext);
+  const dataUser = JSON.stringify(state);
+  const userData = JSON.parse(dataUser);
+
+  // Membuat state untuk menampung data sementara
+  const [formData, setFormData] = useState({
+    photo: "",
+  });
+
+  // Destruct element formData menjadi masing-masing key
+  const { photo } = formData;
+
+  // handle penampungan data
+  const handleStore = async (e) => {
+    // e.preventDefault();
+
+    try {
+      const config = {
+        // set header to define format data
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      };
+
+      var formData = new FormData();
+      formData.append("photo", photo);
+      console.log(photo);
+
+      const res = await API.patch("/change-photo", formData, config);
+      console.log(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div>
       <div className="container mt-3">
@@ -29,7 +67,7 @@ const Profile = () => {
 
                     {/* Email */}
                     <div className="col-xs-6 cover-tile-text">
-                      <b>fitri@mail.com</b>
+                      <b>{userData.user.email}</b>
                       <p className="subtitle">Email</p>
                     </div>
                   </div>
@@ -45,7 +83,7 @@ const Profile = () => {
 
                     {/* Gender */}
                     <div className="col-xs-6 cover-tile-text">
-                      <b>Female</b>
+                      <b>{userData.user.gender}</b>
                       <p className="subtitle">Gender</p>
                     </div>
                   </div>
@@ -61,7 +99,7 @@ const Profile = () => {
 
                     {/* phone */}
                     <div className="col-xs-6 cover-tile-text">
-                      <b>0812-3456-7890</b>
+                      <b>{userData.user.phone}</b>
                       <p className="subtitle">Mobile phone</p>
                     </div>
                   </div>
@@ -77,20 +115,77 @@ const Profile = () => {
 
                     {/* address */}
                     <div className="col-xs-6 cover-tile-text">
-                      <b>Peundeuy, Mangkubumi, Tasikmalaya</b>
+                      <b>{userData.user.address}</b>
                       <p className="subtitle">Address</p>
                     </div>
                   </div>
                 </div>
-                <div className="col-3">
-                  <img
-                    src={require("../images/Toothless.jpg")}
-                    className="rounded shadow-sm"
-                    style={{ height: "10.2rem", width: "10.2rem" }}
-                  ></img>
-                  <button className="Button-o mt-3 py-2">
-                    Change Photo Profile
-                  </button>
+
+                {/* profile photo */}
+                <div
+                  className="col-3 d-flex align-items-center flex-column"
+                  style={{ textAlign: "right" }}
+                >
+                  <div className="p-2">
+                    {userData.user.photo ? (
+                      <img
+                        src={`http://localhost:5001/${userData.user.photo}`}
+                        className="rounded shadow-sm"
+                        style={{ height: "10.2rem", width: "10.2rem" }}
+                        alt="my-photo"
+                      />
+                    ) : (
+                      <img
+                        src={require("../images/profile.jpg")}
+                        className="rounded shadow-sm"
+                        style={{
+                          height: "10.2rem",
+                          width: "10.2rem",
+                          objectFit: "cover",
+                        }}
+                        alt="my-photo"
+                      />
+                    )}
+                  </div>
+                  <div className="p-2">
+                    <form onSubmit={(e) => handleStore(e)}>
+                      <div className="form-group">
+                        <label className="labelPhoto" htmlFor="file">
+                          {photo ? "1 file attached" : "Change Profile Photo"}
+                        </label>
+
+                        <input
+                          type="file"
+                          className="form-control-file"
+                          id="file"
+                          name="photo"
+                          onChange={(e) => {
+                            setFormData({
+                              photo: !e.target.files[0]
+                                ? photo
+                                : e.target.files[0],
+                            });
+                            console.log(photo);
+                          }}
+                          required
+                          style={{ display: "none" }}
+                        ></input>
+                      </div>
+                      {photo ? (
+                        <div>
+                          <button
+                            type="submit"
+                            className="Button-o"
+                            style={{ width: "10.2rem" }}
+                          >
+                            Change Now
+                          </button>
+                        </div>
+                      ) : (
+                        ""
+                      )}
+                    </form>
+                  </div>
                 </div>
               </div>
             </div>
@@ -100,12 +195,8 @@ const Profile = () => {
               </div>
             </div>
             <div className="row">
-              <div className="col-sm-3">
-                <div className="card" style={{ border: "none" }}>
-                  <img src={require("../images/BlockChain.svg")}></img>
-                  <h5>Blockchain with Hyperledger</h5>
-                  <p className="subtitle">Author</p>
-                </div>
+              <div className="col-12">
+                <MyBooks />
               </div>
             </div>
           </div>

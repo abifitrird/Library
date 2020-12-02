@@ -1,30 +1,29 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import SideBar from "../components/SideBar";
+import { Link, useParams } from "react-router-dom";
+import { API } from "../config/api";
 
 const MyLibrary = () => {
-  // Data Buku
-  const books = [
-    {
-      title: "What if? Absurd question",
-      author: "Randall Munroe",
-      image: require("../images/WhatIf.svg"),
-    },
-    {
-      title: "Glyph: New look on things",
-      author: "Morris Williamson",
-      image: require("../images/Glyph.svg"),
-    },
-    {
-      title: "Harry Potter and Goblet of fire",
-      author: "J. K. Rowling",
-      image: require("../images/HarryPotter.svg"),
-    },
-    {
-      title: "Tess on the Road",
-      author: "Rachel Hartman",
-      image: require("../images/TessRoad.svg"),
-    },
-  ];
+  const [collection, setCollection] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadCollection = async () => {
+      try {
+        setLoading(true);
+
+        // fetching data from endpoint
+        const res = await API.get("/collections");
+        setCollection(res.data.data.collection);
+
+        setLoading(false);
+      } catch (err) {
+        console.log(err);
+        setLoading(false);
+      }
+    };
+    loadCollection();
+  }, []);
 
   return (
     <div>
@@ -34,19 +33,33 @@ const MyLibrary = () => {
             <SideBar />
           </div>
           <div className="col-9">
-            <div className="row-sm-3">
-              <h4>My Library</h4>
-            </div>
-            <div className="row mt-4">
-              {books.map((books) => (
-                <div className="col-sm-3">
-                  <div className="card" style={{ border: "none" }}>
-                    <img class="card-img-top" alt="..." src={books.image}></img>
-                    <h5 class="card-title py-2">{books.title}</h5>
-                    <p class="card-text subtitle">{books.author}</p>
+            <div className="row">
+              {/* Card for Books */}
+              {loading || !collection ? (
+                <h3>Loading . . .</h3>
+              ) : (
+                collection.map((item) => (
+                  <div className="col-sm-3  my-2">
+                    <div className="card" style={{ border: "none" }}>
+                      <Link
+                        to={`/bookdetail/${item.id}`}
+                        style={{ color: "black" }}
+                      >
+                        <img
+                          className="card-img-top"
+                          alt="..."
+                          src={require("../images/book.jpg")}
+                        ></img>
+                        <h5 className="card-title py-2">{item.title}</h5>
+
+                        {/* {item.authors.map((author) => ( */}
+                        <p className="card-text subtitle">{item.author}</p>
+                        {/* ))} */}
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>

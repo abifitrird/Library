@@ -143,7 +143,7 @@ exports.deleteCategory = async (req, res) => {
       res.send({
         message: `Data with id=${id} has been deleted`,
         data: {
-          id: deletedCategory,
+          id: id,
         },
       });
     } else {

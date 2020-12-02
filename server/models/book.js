@@ -8,6 +8,14 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      // any literature can belongs to many users
+      Book.belongsToMany(models.User, {
+        as: "users",
+        through: {
+          model: "Collection",
+          as: "collection",
+        },
+      });
       // each book can belong to only one category
       Book.belongsTo(models.Category, {
         as: "category",
@@ -20,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       Book.belongsToMany(models.User, {
         as: "authors",
         through: {
-          model: "AuthorBook",
+          model: models.AuthorBook,
           as: "info",
         },
       });

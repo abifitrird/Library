@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // each book can have many authors
+      // each category can have many books
       Category.hasMany(models.Book);
     }
   }

@@ -1,13 +1,17 @@
 import React, { useState, useContext } from "react";
 import { CartContext } from "../context/cartContext";
 import { Modal } from "react-bootstrap";
-import { Redirect } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import UseModal from "../components/UseModal";
 import SignUp from "./SignUp";
+import { API, setAuthToken } from "../config/api";
 
 const SignIn = ({ showSignIn, toggleSignIn }) => {
   // Penggunaan Modal
   const { isShowing, toggle } = UseModal();
+
+  // Penggunaan history
+  let history = useHistory();
 
   // Penggunaan context
   const [state, dispatch] = useContext(CartContext);
@@ -27,16 +31,48 @@ const SignIn = ({ showSignIn, toggleSignIn }) => {
   };
 
   // Fungsi dari event untuk menghandle pengiriman data saat klik submit
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(email + ":" + password);
-    if (email === "frd@mail.com" && password === "1111") {
-      console.log("Berhasil Login");
+    const config = {
+      // set header to define format data
+      headers: {
+        "Content-type": "application/json",
+      },
+    };
+
+    // set payload
+    const body = JSON.stringify({ email, password });
+
+    try {
+      // send body (email and password) to endpoint /login
+      const res = await API.post("/login", body, config);
+
+      // if request data success, then dispatch
       dispatch({
-        type: "LOGIN",
+        type: "LOGIN_SUCCESS",
+        payload: res.data.data,
       });
-    } else {
-      console.log("Gagal Login");
+
+      // set header from token bearer
+      setAuthToken(res.data.data.token);
+
+      // check if token valid or invalid
+      try {
+        const res = await API.get("/auth");
+        dispatch({
+          type: "USER_LOADED",
+          payload: res.data.data.user,
+        });
+        history.push("/");
+      } catch (error) {
+        dispatch({
+          type: "AUTH_ERROR",
+        });
+      }
+    } catch (err) {
+      dispatch({
+        type: "LOGIN_FAIL",
+      });
     }
   };
 
@@ -86,7 +122,6 @@ const SignIn = ({ showSignIn, toggleSignIn }) => {
         </p>
         <SignUp isShowing={isShowing} toggle={toggle} />
       </Modal.Body>
-      {state.isLogin ? <Redirect to="/home" /> : <Redirect to="/" />}
     </Modal>
   );
 };

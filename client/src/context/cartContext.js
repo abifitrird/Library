@@ -3,54 +3,77 @@ import React, { createContext, useReducer } from "react";
 export const CartContext = createContext();
 
 const initialState = {
-  carts: [
-    {
-      title: "What if? Absurd question",
-      author: "Randall Munroe",
-      ISBN: "9781789807554",
-      image: require("../images/WhatIf.svg"),
-      ebook: "what if? absurd Question.pdf",
-      status: "Approve",
-    },
-    {
-      title: "Glyph: New look on things",
-      author: "Morris Williamson",
-      ISBN: "9781789807555",
-      image: require("../images/Glyph.svg"),
-      ebook: "Glyph.pdf",
-      status: "Approve",
-    },
-    {
-      title: "Harry Potter and Goblet of fire",
-      author: "J. K. Rowling",
-      ISBN: "9781789807666",
-      image: require("../images/HarryPotter.svg"),
-      ebook: "Harrypoter.pdf",
-      status: "Cancel",
-    },
-    {
-      title: "Tess on the Road",
-      author: "Rachel Hartman",
-      ISBN: "9781789807576",
-      image: require("../images/TessRoad.svg"),
-      ebook: "Harrypoter.pdf",
-      status: "Waiting to be verified",
-    },
-  ],
+  carts: [],
   isLogin: false,
+  user: null,
+  loading: true,
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "LOGIN":
+    // case "ADD_CART":
+    //   const filterExistedProduct = state.carts.filter(
+    //     (cart) => cart.id === action.payload.id
+    //   );
+
+    //   if (filterExistedProduct.length > 0) {
+    //     return {
+    //       ...state,
+    //       carts: state.carts.map((cart) =>
+    //         cart.id === action.payload.id
+    //           ? {
+    //               ...cart,
+    //               qty: cart.qty + 1,
+    //             }
+    //           : cart
+    //       ),
+    //     };
+    //   }
+
+    //   return {
+    //     ...state,
+    //     carts: [
+    //       ...state.carts,
+    //       {
+    //         ...action.payload,
+    //         qty: 1,
+    //       },
+    //     ],
+    //   };
+    // case "REMOVE_CART":
+    //   return {
+    //     ...state,
+    //     carts: state.carts.filter((cart) => cart.id !== action.payload),
+    //   };
+    case "USER_LOADED":
       return {
         ...state,
         isLogin: true,
+        user: action.payload,
+        loading: false,
       };
-    case "LOGOUT":
+    case "AUTH_ERROR":
+    case "LOGIN_FAIL":
       return {
         ...state,
         isLogin: false,
+        user: null,
+        loading: false,
+      };
+    case "LOGIN_SUCCESS":
+      localStorage.setItem("token", action.payload.token);
+
+      return {
+        ...state,
+        isLogin: true,
+        loading: false,
+      };
+    case "LOGOUT":
+      localStorage.removeItem("token");
+      return {
+        ...state,
+        isLogin: false,
+        user: null,
       };
     default:
       throw new Error();
